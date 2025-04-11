@@ -1,0 +1,106 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Student {
+private:
+    string name;
+    int rollNumber;
+    float CGPA;
+    vector<string> courses;
+
+public:
+    Student() : name(""), rollNumber(0), CGPA(0.0) {}
+    Student(string name, int rollNumber, float CGPA) : name(name), rollNumber(rollNumber), CGPA(CGPA) {}
+    Student(const Student& other) {
+        name = other.name;
+        rollNumber = other.rollNumber;
+        CGPA = other.CGPA;
+        courses = other.courses;
+    }
+    ~Student() {}
+
+    void addCourse(string course) {
+        courses.push_back(course);
+    }
+    
+    void updateCGPA(float newCGPA) {
+        if (newCGPA >= 0.0 && newCGPA <= 4.0) {
+            CGPA = newCGPA;
+        } else {
+            cout << "Invalid CGPA value. Please enter a value between 0.0 and 4.0." << endl;
+        }
+    }
+    
+    void displayInfo() const {
+        cout << "\nStudent Name: " << name;
+        cout << "\nRoll Number: " << rollNumber;
+        cout << "\nCGPA: " << CGPA;
+        cout << "\nCourses: ";
+        for (const auto& course : courses) {
+            cout << course << " ";
+        }
+        cout << "\n";
+    }
+
+    int getRollNumber() const {
+        return rollNumber;
+    }
+};
+
+class StudentManagementSystem {
+private:
+    vector<Student> students;
+public:
+    void addStudent(const Student& student) {
+        students.push_back(student);
+    }
+    
+    Student* searchStudent(int rollNumber) {
+        for (auto& student : students) {
+            if (student.getRollNumber() == rollNumber) {
+                return &student;
+            }
+        }
+        return nullptr;
+    }
+    
+    void displayAllStudents() const {
+        for (const auto& student : students) {
+            student.displayInfo();
+        }
+    }
+};
+
+int main() {
+    StudentManagementSystem sms;
+
+    Student s1("Alice", 101, 3.8);
+    s1.addCourse("Math");
+    s1.addCourse("Physics");
+    sms.addStudent(s1);
+    
+    Student s2("Bob", 102, 3.5);
+    s2.addCourse("Chemistry");
+    sms.addStudent(s2);
+    
+    sms.displayAllStudents();
+    
+    int roll;
+    cout << "Enter roll number to search: ";
+    while (!(cin >> roll)) {
+        cin.clear(); // Clear the error flag
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+        cout << "Invalid input. Please enter a valid roll number: ";
+    }
+    Student* found = sms.searchStudent(roll);
+    if (found) {
+        found->displayInfo();
+    } else {
+        cout << "Student not found!\n";
+    }
+    
+    return 0;
+}
